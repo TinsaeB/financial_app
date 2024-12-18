@@ -1,0 +1,4 @@
+*.pyc
+__pycache__
+.env
+sme_finance.db

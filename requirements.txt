@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+pydantic
+SQLAlchemy
+python-dotenv
+streamlit
+requests
+plotly
+pandas
+celery
+redis
+django
