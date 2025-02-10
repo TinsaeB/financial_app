@@ -1,9 +1,7 @@
-from requests import Session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
-# Assuming you have a way to access Django models across services, or you can redefine them here
-from purchasing.models import Supplier 
+from typing import List, Dict, Any, Optional
 
 DATABASE_URL = "sqlite:///./sme_finance.db"  # Or get this from config
 
@@ -24,8 +22,47 @@ def create(db: Session, obj):
     db.refresh(obj)
     return obj
 
-# Example usage for querying a supplier
-def get_supplier(db: Session, supplier_id: int):
-    return db.query(Supplier).filter(Supplier.id == supplier_id).first()
+def update(db: Session, obj, data: Dict[str, Any]):
+    for key, value in data.items():
+        setattr(obj, key, value)
+    db.commit()
+    db.refresh(obj)
+    return obj
 
-# ... other CRUD and utility functions
+def delete(db: Session, obj):
+    db.delete(obj)
+    db.commit()
+
+def query(
+    db: Session,
+    model,
+    filters: Optional[List[Dict[str, Any]]] = None,
+    sort_by: Optional[str] = None,
+    limit: Optional[int] = 100,
+    offset: Optional[int] = None,
+    joins: Optional[List[str]] = None,
+):
+    query = db.query(model)
+
+    if filters:
+        for filter_item in filters:
+            for key, value in filter_item.items():
+                if isinstance(value, list):
+                    query = query.filter(getattr(model, key).in_(value))
+                else:
+                    query = query.filter(getattr(model, key) == value)
+
+    if joins:
+        for join in joins:
+            query = query.join(getattr(model, join))
+
+    if sort_by:
+        query = query.order_by(text(sort_by))
+
+    if offset:
+        query = query.offset(offset)
+
+    if limit:
+        query = query.limit(limit)
+
+    return query.all()

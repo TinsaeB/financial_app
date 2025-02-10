@@ -1,34 +1,27 @@
 import streamlit as st
 import requests
+from ..app import fetch_data_from_api, display_data_table
 
-# FastAPI base URL (adjust if needed)
-FASTAPI_BASE_URL = "http://localhost:8000"
+st.title("Purchasing Module")
 
-def show_purchasing():
-    st.header("Purchasing")
-    # Fetch suppliers
-    response = requests.get(f"{FASTAPI_BASE_URL}/suppliers/")
-    if response.status_code == 200:
-        suppliers = response.json()
-        st.subheader("Suppliers")
-        st.table(suppliers)
+st.header("Manage Suppliers")
+try:
+    suppliers = fetch_data_from_api(f"http://localhost:8000/purchasing/suppliers")
+    if suppliers:
+        st.subheader("List of Suppliers")
+        for supplier in suppliers:
+            st.markdown(f"- **{supplier['name']}**: {supplier['contact_person']}")
     else:
-        st.error("Failed to fetch suppliers")
+        st.markdown("No suppliers found.")
+except Exception as e:
+    st.error(f"Error fetching suppliers: {e}")
+st.markdown("Add/edit/delete suppliers functionality will be implemented here.")
 
-    # Fetch purchase orders
-    response = requests.get(f"{FASTAPI_BASE_URL}/purchase-orders/")
-    if response.status_code == 200:
-        purchase_orders = response.json()
-        st.subheader("Purchase Orders")
-        st.table(purchase_orders)
-    else:
-        st.error("Failed to fetch purchase orders")
+st.header("Manage Purchase Orders")
+st.markdown("Create, list, view, edit, and delete purchase orders functionality will be implemented here.")
 
-    # Fetch purchase items
-    response = requests.get(f"{FASTAPI_BASE_URL}/purchase-items/")
-    if response.status_code == 200:
-        purchase_items = response.json()
-        st.subheader("Purchase Items")
-        st.table(purchase_items)
-    else:
-        st.error("Failed to fetch purchase items")
+st.header("Manage Purchase Items")
+st.markdown("Manage purchase items functionality will be implemented here.")
+
+st.header("Process Payment")
+st.markdown("Process payment functionality will be implemented here.")

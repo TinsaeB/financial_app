@@ -8,7 +8,7 @@ app = FastAPI()
 
 class AdviceRequest(BaseModel):
     prompt: str
-    model_name: str = "llama2"
+    model_name: str = "llama3.2"
 
 @app.post("/financial-advice/", response_model=dict)
 async def get_financial_advice(request: AdviceRequest, db: Session = Depends(get_db)):

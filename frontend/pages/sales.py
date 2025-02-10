@@ -1,34 +1,27 @@
 import streamlit as st
 import requests
+from ..app import fetch_data_from_api, display_data_table
 
-# FastAPI base URL (adjust if needed)
-FASTAPI_BASE_URL = "http://localhost:8000"
+st.title("Sales Module")
 
-def show_sales():
-    st.header("Sales")
-    # Fetch customers
-    response = requests.get(f"{FASTAPI_BASE_URL}/customers/")
-    if response.status_code == 200:
-        customers = response.json()
-        st.subheader("Customers")
-        st.table(customers)
+st.header("Manage Customers")
+try:
+    customers = fetch_data_from_api(f"http://localhost:8000/sales/customers")
+    if customers:
+        st.subheader("List of Customers")
+        for customer in customers:
+            st.markdown(f"- **{customer['name']}**: {customer['contact_person']}")
     else:
-        st.error("Failed to fetch customers")
+        st.markdown("No customers found.")
+except Exception as e:
+    st.error(f"Error fetching customers: {e}")
+st.markdown("Add/edit/delete customers functionality will be implemented here.")
 
-    # Fetch sales orders
-    response = requests.get(f"{FASTAPI_BASE_URL}/sales-orders/")
-    if response.status_code == 200:
-        sales_orders = response.json()
-        st.subheader("Sales Orders")
-        st.table(sales_orders)
-    else:
-        st.error("Failed to fetch sales orders")
+st.header("Manage Sales Orders")
+st.markdown("Create, list, view, edit, and delete sales orders functionality will be implemented here.")
 
-    # Fetch sale items
-    response = requests.get(f"{FASTAPI_BASE_URL}/sale-items/")
-    if response.status_code == 200:
-        sale_items = response.json()
-        st.subheader("Sale Items")
-        st.table(sale_items)
-    else:
-        st.error("Failed to fetch sale items")
+st.header("Manage Sale Items")
+st.markdown("Manage sale items functionality will be implemented here.")
+
+st.header("Manage Installment Plans")
+st.markdown("Manage installment plans functionality will be implemented here.")
